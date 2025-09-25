@@ -23,3 +23,6 @@ s3fs==2024.6.1
 dvc[s3]==3.49.0
 # Progress bar & utilities
 tqdm
+python-dotenv==1.0.1
+pytest==8.3.3
+
