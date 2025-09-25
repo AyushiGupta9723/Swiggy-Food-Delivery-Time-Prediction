@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from mlflow import MlflowClient
 import logging
+import os
 
 
 # create logger
@@ -21,6 +22,25 @@ logger.addHandler(handler)
 formatter = logging.Formatter(fmt='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 # add formatter to handler
 handler.setFormatter(formatter)
+
+# initialize dagshub
+import dagshub
+import mlflow.client
+from dotenv import load_dotenv
+load_dotenv()
+# Set up DagsHub credentials for MLflow tracking
+dagshub_token = os.getenv("DAGSHUB_PAT")
+dagshub_username = os.getenv("DAGSHUB_USERNAME")
+dagshub_repo=os.getenv("DAGSHUB_REPO")
+if not dagshub_token:
+    raise EnvironmentError("DAGSHUB_PAT environment variable is not set")
+if not dagshub_username:
+    raise EnvironmentError("DAGSHUB_USERNAME environment variable is not set")
+if not dagshub_repo:
+    raise EnvironmentError("DAGSHUB_REPO environment variable is not set")
+
+
+dagshub.init(repo_owner=dagshub_username, repo_name=dagshub_repo, mlflow=True)
 
 
 def load_model_information(file_path):
