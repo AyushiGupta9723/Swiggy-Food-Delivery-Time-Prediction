@@ -1,0 +1,6 @@
+[core]
+    remote = remote
+['remote "s3remote"']
+    url = s3://swiggy-delivery-time
+['remote "remote"']
+    url = s3://swiggy-delivery
