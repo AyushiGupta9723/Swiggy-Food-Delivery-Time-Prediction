@@ -8,15 +8,6 @@ from sklearn.model_selection import cross_val_score
 from sklearn.metrics import mean_absolute_error, r2_score
 import json
 
-
-# initialize dagshub
-
-import dagshub
-dagshub.init(repo_owner='ayushigupta9723', repo_name='Swiggy-Delivery-Time-Prediction', mlflow=True)
-
-# set the tracking server
-mlflow.set_tracking_uri("https://dagshub.com/ayushigupta9723/Swiggy-Delivery-Time-Prediction.mlflow")
-
 # set mlflow experment name
 mlflow.set_experiment("DVC Pipeline")
 
