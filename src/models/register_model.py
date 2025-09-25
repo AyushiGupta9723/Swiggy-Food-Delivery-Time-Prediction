@@ -28,6 +28,7 @@ import dagshub
 import mlflow.client
 from dotenv import load_dotenv
 load_dotenv()
+
 # Set up DagsHub credentials for MLflow tracking
 dagshub_token = os.getenv("DAGSHUB_PAT")
 dagshub_username = os.getenv("DAGSHUB_USERNAME")
@@ -39,9 +40,9 @@ if not dagshub_username:
 if not dagshub_repo:
     raise EnvironmentError("DAGSHUB_REPO environment variable is not set")
 
-
-dagshub.init(repo_owner=dagshub_username, repo_name=dagshub_repo, mlflow=True)
-
+os.environ["MLFLOW_TRACKING_URI"] = f"https://dagshub.com/{dagshub_username}/{dagshub_repo}.mlflow"
+os.environ["MLFLOW_TRACKING_USERNAME"] = dagshub_username
+os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
 
 def load_model_information(file_path):
     with open(file_path) as f:

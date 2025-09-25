@@ -50,5 +50,34 @@ jobs:
           dvc pull
 
       - name: DVC PIPELINE
+        env:
+          DAGSHUB_PAT: ${{ secrets.DAGSHUB_PAT }}
+          DAGSHUB_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
+          DAGSHUB_REPO: ${{ secrets.DAGSHUB_REPO }}
         run: |
           dvc repro
+
+      - name: Test Model Registry
+        env:
+          DAGSHUB_PAT: ${{ secrets.DAGSHUB_PAT }}
+          DAGSHUB_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
+          DAGSHUB_REPO: ${{ secrets.DAGSHUB_REPO }}
+        run: |
+          pytest tests/model_registry.py
+
+      - name: Test Model Performance
+        env:
+          DAGSHUB_PAT: ${{ secrets.DAGSHUB_PAT }}
+          DAGSHUB_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
+          DAGSHUB_REPO: ${{ secrets.DAGSHUB_REPO }}
+        run: |
+          pytest tests/model_performance.py
+
+      - name: Promote Model
+        env:
+          DAGSHUB_PAT: ${{ secrets.DAGSHUB_PAT }}
+          DAGSHUB_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
+          DAGSHUB_REPO: ${{ secrets.DAGSHUB_REPO }}
+        if: success()
+        run: |
+          python Scripts/promote_model_to_prod.py
