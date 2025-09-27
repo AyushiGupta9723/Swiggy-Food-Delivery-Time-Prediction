@@ -49,14 +49,6 @@ jobs:
         run: |
           dvc pull
 
-      - name: DVC PIPELINE
-        env:
-          DAGSHUB_PAT: ${{ secrets.DAGSHUB_PAT }}
-          DAGSHUB_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
-          DAGSHUB_REPO: ${{ secrets.DAGSHUB_REPO }}
-        run: |
-          dvc repro
-
       - name: Test Model Registry
         env:
           DAGSHUB_PAT: ${{ secrets.DAGSHUB_PAT }}
@@ -112,12 +104,11 @@ jobs:
             aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
             IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_URI }}:latest
             docker pull $IMAGE_URI
-            docker stop my-app || true
-            docker rm my-app || true
+            docker stop swiggy_ecr || true
+            docker rm swiggy_ecr || true
             docker run -d -p 80:8000 \
             -e DAGSHUB_PAT=${{ secrets.DAGSHUB_PAT }} \
             -e DAGSHUB_USERNAME=${{ secrets.DAGSHUB_USERNAME }} \
             -e DAGSHUB_REPO=${{ secrets.DAGSHUB_REPO }} \
             --name swiggy-${{ github.run_number }} \
             $IMAGE_URI
-            
