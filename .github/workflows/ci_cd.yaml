@@ -49,6 +49,14 @@ jobs:
         run: |
           dvc pull
 
+      - name: DVC REPO
+        env:
+          DAGSHUB_PAT: ${{ secrets.DAGSHUB_PAT }}
+          DAGSHUB_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
+          DAGSHUB_REPO: ${{ secrets.DAGSHUB_REPO }}
+        run: |
+          dvc repo
+
       - name: Test Model Registry
         env:
           DAGSHUB_PAT: ${{ secrets.DAGSHUB_PAT }}
@@ -64,7 +72,15 @@ jobs:
           DAGSHUB_REPO: ${{ secrets.DAGSHUB_REPO }}
         run: |
           pytest tests/model_performance.py
-     
+
+      - name: Promote Model
+        env:
+          DAGSHUB_PAT: ${{ secrets.DAGSHUB_PAT }}
+          DAGSHUB_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
+          DAGSHUB_REPO: ${{ secrets.DAGSHUB_REPO }}
+        if: success()
+        run: |
+          python Scripts/promote_model_to_prod.py
 
      
       - name: Login to Amazon ECR

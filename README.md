@@ -28,6 +28,7 @@ This repo integrates **DVC**, **MLflow**, **DagsHub**, **GitHub Actions CI/CD**,
 ├── dvc.yaml           <- DVC pipeline stages
 └── .github/workflows  <- CI/CD workflow definitions
 ```
+![alt text](diagram.png)
 
 ##  🚀 CI/CD Pipeline
 
@@ -137,7 +138,7 @@ docker run -p 8000:8000 swiggy-delivery:latest
 Deploys automatically on **AWS EC2** via **GitHub Actions**.
 
 ---
-
+f56b865 dad4755 3924eaf edb2830
 
 ## 🙌 Acknowledgments
 
