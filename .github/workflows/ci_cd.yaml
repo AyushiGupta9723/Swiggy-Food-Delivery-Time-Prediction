@@ -110,5 +110,5 @@ jobs:
             -e DAGSHUB_PAT=${{ secrets.DAGSHUB_PAT }} \
             -e DAGSHUB_USERNAME=${{ secrets.DAGSHUB_USERNAME }} \
             -e DAGSHUB_REPO=${{ secrets.DAGSHUB_REPO }} \
-            --name swiggy-${{ github.run_number }} \
+            --name swiggy_ecr \
             $IMAGE_URI
