@@ -1,14 +1,16 @@
 import mlflow
-import dagshub
 import json
 from mlflow import MlflowClient
 import os
 from dotenv import load_dotenv
+
 load_dotenv()
+
 # Set up DagsHub credentials for MLflow tracking
 dagshub_token = os.getenv("DAGSHUB_PAT")
 dagshub_username = os.getenv("DAGSHUB_USERNAME")
-dagshub_repo=os.getenv("DAGSHUB_REPO")
+dagshub_repo = os.getenv("DAGSHUB_REPO")
+
 if not dagshub_token:
     raise EnvironmentError("DAGSHUB_PAT environment variable is not set")
 if not dagshub_username:
@@ -20,28 +22,43 @@ if not dagshub_repo:
 def load_model_information(file_path):
     with open(file_path) as f:
         run_info = json.load(f)
-        
     return run_info
 
 
-# get model name
+# Get model name
 model_name = load_model_information("run_information.json")["model_name"]
-stage = "Staging"
-
-# get the latest version from staging stage
 client = MlflowClient()
 
-# get the latest version of model in staging
-latest_versions = client.get_latest_versions(name=model_name,stages=[stage])
+# Get latest staging model
+latest_staging_versions = client.get_latest_versions(name=model_name, stages=["Staging"])
 
-latest_model_version_staging = latest_versions[0].version
+if not latest_staging_versions:
+    print("ℹ️ No model found in Staging. Skipping promotion.")
+else:
+    latest_model_version_staging = latest_staging_versions[0].version
+    print(f"🚀 Found Staging model v{latest_model_version_staging} for {model_name}")
 
-# promotion stage
-promotion_stage = "Production"
-
-client.transition_model_version_stage(
-    name=model_name,
-    version=latest_model_version_staging,
-    stage=promotion_stage,
-    archive_existing_versions=True
-)
+    # Get latest production model (optional check)
+    latest_production_versions = client.get_latest_versions(name=model_name, stages=["Production"])
+    if latest_production_versions:
+        latest_model_version_production = latest_production_versions[0].version
+        if latest_model_version_staging == latest_model_version_production:
+            print("⚠️ Staging model is the same as current Production. Skipping promotion.")
+        else:
+            # Promote to production and archive old versions
+            client.transition_model_version_stage(
+                name=model_name,
+                version=latest_model_version_staging,
+                stage="Production",
+                archive_existing_versions=True
+            )
+            print(f"🎯 Model {model_name} v{latest_model_version_staging} promoted to Production")
+    else:
+        # No production model yet → promote directly
+        client.transition_model_version_stage(
+            name=model_name,
+            version=latest_model_version_staging,
+            stage="Production",
+            archive_existing_versions=True
+        )
+        print(f"🎯 First Production model: {model_name} v{latest_model_version_staging}")
