@@ -49,13 +49,13 @@ jobs:
         run: |
           dvc pull
 
-      - name: DVC REPO
+      - name: DVC PIPELINE
         env:
           DAGSHUB_PAT: ${{ secrets.DAGSHUB_PAT }}
           DAGSHUB_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
           DAGSHUB_REPO: ${{ secrets.DAGSHUB_REPO }}
         run: |
-          dvc repo
+          dvc repro
 
       - name: Test Model Registry
         env:
